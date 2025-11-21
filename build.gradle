@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.4'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'frm.utn.global'
+version = '0.0.1-SNAPSHOT'
+description = 'meli'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// SPRING
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// BASE DE DATOS
+	runtimeOnly 'com.h2database:h2'
+
+	// LOMBOK
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// DEVTOOLS
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// TESTING
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 🔽 JUNIT 5 explícito (para evitar el error que te salía)
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// 🔽 Mockito
+	testImplementation 'org.mockito:mockito-core:5.11.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
