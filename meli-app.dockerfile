@@ -1,22 +1,27 @@
+# Dockerfile para construir y ejecutar la aplicación Spring Boot
+
 # ========== ETAPA 1: BUILD ==========
-FROM gradle:8.10-jdk17-alpine AS build
+FROM eclipse-temurin:21-jdk AS build
 
-# Copiar el código fuente al contenedor
-COPY . /home/app
+WORKDIR /workspace
 
-WORKDIR /home/app
+# Copiar todo el código fuente al contenedor
+COPY . /workspace
 
-# Construir JAR con Gradle
-RUN gradle bootJar --no-daemon
+# Dar permisos de ejecución a gradlew y ejecutar bootJar (skip tests para acelerar)
+RUN chmod +x ./gradlew && \
+    ./gradlew bootJar --no-daemon -x test
 
 # ========== ETAPA 2: RUNTIME ==========
-FROM openjdk:17-alpine
+FROM eclipse-temurin:21-jre
 
-# Exponer puerto 8080
+WORKDIR /app
+
+# Exponer el puerto 8080 (donde corre Spring Boot)
 EXPOSE 8080
 
-# Copiar el JAR generado desde la etapa de build
-COPY --from=build /home/app/build/libs/*.jar /app.jar
+# Copiar SOLO el JAR generado desde la etapa de build
+COPY --from=build /workspace/build/libs/global-0.0.1-SNAPSHOT.jar /app/app.jar
 
-# Ejecutar la aplicación
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Comando para ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
